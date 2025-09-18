@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+  namespace: all-in-market
+  labels:
+    app: notification-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      name: notification-service
+      labels:
+        app: notification-service
+    spec:
+      containers:
+        - name: notification-service
+          image: albertsereda/all-in-market-notification-service
+          imagePullPolicy: Always
+          env:
+            - name: SPRING_CONFIG_IMPORT
+              value: file:/config/
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - name: notification-service-config
+              mountPath: /config
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+      volumes:
+        - name: notification-service-config
+          configMap:
+            name: notification-service-config
+      restartPolicy: Always
